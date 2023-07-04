@@ -23,6 +23,8 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 	private Environment env;
 
 	private static final String[] PUBLIC = { "/oauth/token","/h2-console/**" };
+	private static final String[] VISITOR_OR_MEMBER = {"/genres"};
+	private static final String[] MEMBER = {"/reviews" };
 
 
 	@Override
@@ -38,7 +40,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
 			http.headers().frameOptions().disable();
 		}
 		http.authorizeRequests()
-		.antMatchers(PUBLIC).permitAll();		
+		.antMatchers(VISITOR_OR_MEMBER).hasAnyRole("MEMBER","VISITOR")
+		.antMatchers(MEMBER).hasRole("MEMBER")
+		.antMatchers(PUBLIC).permitAll()
+		.anyRequest().authenticated();	
 	}
 
 }

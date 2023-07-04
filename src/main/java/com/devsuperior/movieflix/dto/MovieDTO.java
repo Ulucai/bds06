@@ -1,53 +1,52 @@
-package com.devsuperior.movieflix.entities;
+package com.devsuperior.movieflix.dto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import com.devsuperior.movieflix.entities.Genre;
+import com.devsuperior.movieflix.entities.Movie;
+import com.devsuperior.movieflix.entities.Review;
 
-@Entity
-@Table(name="tb_movie")
-public class Movie {
-	
-	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+public class MovieDTO {
+
 	private Long id;
 	private String title;
 	private String subTitle;
 	private Integer year;
 	private String imgUrl;
-	@Column(columnDefinition = "TEXT")
 	private String synopsis;
-	@ManyToOne
-	@JoinColumn(name="genre_id")	
-	private Genre genre;
 	
-	@OneToMany(mappedBy = "movie")	
+	private Genre genre;	
+	
 	private List<Review> reviews = new ArrayList<>();
 	
-	public Movie() {}
+	public MovieDTO() {}
 
-	public Movie(Long id, String title, String subTitle, Integer year, String imgUrl, String synopsys, Genre genre) {
-		super();
+	public MovieDTO(Long id, String title, String subTitle, Integer year, String imgUrl, String synopsis,
+			Genre genre) {	
 		this.id = id;
 		this.title = title;
 		this.subTitle = subTitle;
 		this.year = year;
 		this.imgUrl = imgUrl;
-		this.synopsis = synopsys;
+		this.synopsis = synopsis;
 		this.genre = genre;
 	}
-
-
+	public MovieDTO(Movie entity) {		
+		this.id = entity.getId();
+		this.title = entity.getTitle();
+		this.subTitle = entity.getSubTitle();
+		this.year = entity.getYear();
+		this.imgUrl = entity.getImgUrl();
+		this.synopsis = entity.getSynopsis();
+		this.genre = entity.getGenre();
+	}
+	
+	public MovieDTO(Movie entity, Set<Review> reviews) {
+		this(entity);
+		reviews.forEach(x-> this.reviews.add(x));
+	}
 
 	public Long getId() {
 		return id;
@@ -88,7 +87,7 @@ public class Movie {
 	public void setImgUrl(String imgUrl) {
 		this.imgUrl = imgUrl;
 	}
-		
+
 	public String getSynopsis() {
 		return synopsis;
 	}
@@ -101,35 +100,11 @@ public class Movie {
 		return genre;
 	}
 
-
-
 	public void setGenre(Genre genre) {
 		this.genre = genre;
-	}	
+	}
 
 	public List<Review> getReviews() {
 		return reviews;
-	}
-
-
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Movie other = (Movie) obj;
-		return Objects.equals(id, other.id);
-	}
-	
-	
-
+	}			
 }

@@ -3,6 +3,8 @@ package com.devsuperior.movieflix.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,12 +38,18 @@ public class UserService implements UserDetailsService{
 	public UserDTO getCurrentUser()
 	{
 		String username = SecurityContextHolder.getContext().getAuthentication().getName();
-		User user = userRepository.findByEmail(username);
-		UserDTO dto = new UserDTO(user);
+		User user = userRepository.findByEmail(username);		
+		UserDTO dto = new UserDTO(user);		
 		dto.getRoles().addAll(user.getRoles());
 		return dto;
 	}
 	
+	@Transactional(readOnly=true)
+	public Page<UserDTO> findAllPaged(Pageable pageable)
+	{
+		Page<User> users = userRepository.findAll(pageable);
+		return users.map(x-> new UserDTO(x));
+	}
 	
 	
 }
